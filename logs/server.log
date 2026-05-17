@@ -34,3 +34,83 @@
 {"timestamp": "2026-05-17 22:23:10.083", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 13/13 \u2192 'alice'"}
 {"timestamp": "2026-05-17 22:23:10.173", "level": "SUCCESS", "event": "COMPLETE", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | 'bob' \u2192 'alice' | 'cia.drawio.png'"}
 {"timestamp": "2026-05-17 22:23:25.233", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'bob' logged in. New keys registered. 0 stale transfer(s) cleared (encrypted with old key)."}
+{"timestamp": "2026-05-17 22:45:48.992", "level": "INFO", "event": "SERVER_START", "actor": "SERVER", "message": "Secure File Transfer Server started \u2014 open http://localhost:5000"}
+{"timestamp": "2026-05-17 22:46:00.366", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'alice' logged in. New keys registered. 0 stale transfer(s) cleared (encrypted with old key)."}
+{"timestamp": "2026-05-17 22:47:08.928", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'alice' logged in. New keys registered. 0 stale transfer(s) cleared (encrypted with old key)."}
+{"timestamp": "2026-05-17 22:47:21.474", "level": "INFO", "event": "SERVER_START", "actor": "SERVER", "message": "Secure File Transfer Server started \u2014 open http://localhost:5000"}
+{"timestamp": "2026-05-17 22:47:25.385", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'alice' logged in. New keys registered. 0 stale transfer(s) cleared (encrypted with old key)."}
+{"timestamp": "2026-05-17 22:48:10.849", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'alice' logged in. New keys registered. 0 stale transfer(s) cleared (encrypted with old key)."}
+{"timestamp": "2026-05-17 22:48:26.786", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'alice' logged in. New keys registered. 0 stale transfer(s) cleared (encrypted with old key)."}
+{"timestamp": "2026-05-17 22:48:55.127", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'alice' logged in. New keys registered. 0 stale transfer(s) cleared (encrypted with old key)."}
+{"timestamp": "2026-05-17 22:49:05.491", "level": "INFO", "event": "KEY_FETCH", "actor": "SERVER", "message": "'alice' fetched public key of 'bob' for client-side encryption"}
+{"timestamp": "2026-05-17 22:49:05.854", "level": "INFO", "event": "TRANSFER_INIT", "actor": "SERVER", "message": "Transfer 4902dc58\u2026 | 'alice' \u2192 'bob' | 'cia.drawio.png'"}
+{"timestamp": "2026-05-17 22:49:06.148", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4902dc58\u2026 | Chunk 1/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:49:06.448", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4902dc58\u2026 | Chunk 2/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:49:06.501", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4902dc58\u2026 | Chunk 3/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:49:06.783", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4902dc58\u2026 | Chunk 4/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:49:06.847", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4902dc58\u2026 | Chunk 5/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:49:07.120", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4902dc58\u2026 | Chunk 6/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:49:07.462", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4902dc58\u2026 | Chunk 7/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:49:07.495", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4902dc58\u2026 | Chunk 8/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:49:07.840", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4902dc58\u2026 | Chunk 9/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:49:08.097", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4902dc58\u2026 | Chunk 10/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:49:08.193", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4902dc58\u2026 | Chunk 11/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:49:08.447", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4902dc58\u2026 | Chunk 12/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:49:08.538", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4902dc58\u2026 | Chunk 13/13 | 45701 bytes"}
+{"timestamp": "2026-05-17 22:49:08.555", "level": "INFO", "event": "TRANSFER_READY", "actor": "SERVER", "message": "Transfer 4902dc58\u2026 | All 13 chunk(s) ready for 'bob'"}
+{"timestamp": "2026-05-17 22:49:18.432", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'alice' logged in. New keys registered. 0 stale transfer(s) cleared (encrypted with old key)."}
+{"timestamp": "2026-05-17 22:49:23.708", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'alice' logged in. New keys registered. 0 stale transfer(s) cleared (encrypted with old key)."}
+{"timestamp": "2026-05-17 22:49:41.862", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'bob' logged in. New keys registered. 1 stale transfer(s) cleared (encrypted with old key)."}
+{"timestamp": "2026-05-17 22:49:52.611", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'bob' logged in. New keys registered. 0 stale transfer(s) cleared (encrypted with old key)."}
+{"timestamp": "2026-05-17 22:49:57.949", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'bob' logged in. New keys registered. 0 stale transfer(s) cleared (encrypted with old key)."}
+{"timestamp": "2026-05-17 22:50:06.394", "level": "INFO", "event": "KEY_FETCH", "actor": "SERVER", "message": "'bob' fetched public key of 'alice' for client-side encryption"}
+{"timestamp": "2026-05-17 22:50:06.741", "level": "INFO", "event": "TRANSFER_INIT", "actor": "SERVER", "message": "Transfer 4b5db5bd\u2026 | 'bob' \u2192 'alice' | 'cia.drawio.png'"}
+{"timestamp": "2026-05-17 22:50:06.996", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4b5db5bd\u2026 | Chunk 1/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:50:07.096", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4b5db5bd\u2026 | Chunk 2/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:50:07.337", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4b5db5bd\u2026 | Chunk 3/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:50:07.453", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4b5db5bd\u2026 | Chunk 4/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:50:07.681", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4b5db5bd\u2026 | Chunk 5/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:50:07.804", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4b5db5bd\u2026 | Chunk 6/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:50:08.044", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4b5db5bd\u2026 | Chunk 7/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:50:08.364", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4b5db5bd\u2026 | Chunk 8/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:50:08.654", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4b5db5bd\u2026 | Chunk 9/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:50:08.719", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4b5db5bd\u2026 | Chunk 10/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:50:09.019", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4b5db5bd\u2026 | Chunk 11/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:50:09.064", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4b5db5bd\u2026 | Chunk 12/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:50:09.412", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 4b5db5bd\u2026 | Chunk 13/13 | 45701 bytes"}
+{"timestamp": "2026-05-17 22:50:09.433", "level": "INFO", "event": "TRANSFER_READY", "actor": "SERVER", "message": "Transfer 4b5db5bd\u2026 | All 13 chunk(s) ready for 'alice'"}
+{"timestamp": "2026-05-17 22:50:15.472", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'bob' logged in. New keys registered. 0 stale transfer(s) cleared (encrypted with old key)."}
+{"timestamp": "2026-05-17 22:50:20.789", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'bob' logged in. New keys registered. 0 stale transfer(s) cleared (encrypted with old key)."}
+{"timestamp": "2026-05-17 22:50:27.754", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'bob' logged in. New keys registered. 0 stale transfer(s) cleared (encrypted with old key)."}
+{"timestamp": "2026-05-17 22:50:56.162", "level": "INFO", "event": "SERVER_START", "actor": "SERVER", "message": "Secure File Transfer Server started \u2014 open http://localhost:5000"}
+{"timestamp": "2026-05-17 22:50:59.892", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'bob' logged in. New keys registered. 0 stale transfer(s) cleared (encrypted with old key)."}
+{"timestamp": "2026-05-17 22:51:09.141", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'bob' logged in. New keys registered. 0 stale transfer(s) cleared (encrypted with old key)."}
+{"timestamp": "2026-05-17 22:51:19.990", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'alice' logged in. New keys registered. 1 stale transfer(s) cleared (encrypted with old key)."}
+{"timestamp": "2026-05-17 22:51:31.119", "level": "INFO", "event": "KEY_FETCH", "actor": "SERVER", "message": "'bob' fetched public key of 'alice' for client-side encryption"}
+{"timestamp": "2026-05-17 22:51:31.389", "level": "INFO", "event": "TRANSFER_INIT", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | 'bob' \u2192 'alice' | '2.drawio.png'"}
+{"timestamp": "2026-05-17 22:51:31.487", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | Chunk 1/11 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:51:31.775", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | Chunk 2/11 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:51:31.841", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | Chunk 3/11 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:51:32.137", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | Chunk 4/11 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:51:32.201", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | Chunk 5/11 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:51:32.482", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | Chunk 6/11 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:51:32.562", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | Chunk 7/11 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:51:32.834", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | Chunk 8/11 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:51:32.932", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | Chunk 9/11 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:51:33.202", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | Chunk 10/11 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:51:33.289", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | Chunk 11/11 | 9805 bytes"}
+{"timestamp": "2026-05-17 22:51:33.304", "level": "INFO", "event": "TRANSFER_READY", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | All 11 chunk(s) ready for 'alice'"}
+{"timestamp": "2026-05-17 22:51:38.125", "level": "INFO", "event": "KEY_FETCH", "actor": "SERVER", "message": "'alice' fetched public key of 'bob' for client-side encryption"}
+{"timestamp": "2026-05-17 22:51:38.464", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | Chunk 1/11 \u2192 'alice'"}
+{"timestamp": "2026-05-17 22:51:38.721", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | Chunk 2/11 \u2192 'alice'"}
+{"timestamp": "2026-05-17 22:51:38.812", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | Chunk 3/11 \u2192 'alice'"}
+{"timestamp": "2026-05-17 22:51:39.069", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | Chunk 4/11 \u2192 'alice'"}
+{"timestamp": "2026-05-17 22:51:39.158", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | Chunk 5/11 \u2192 'alice'"}
+{"timestamp": "2026-05-17 22:51:39.415", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | Chunk 6/11 \u2192 'alice'"}
+{"timestamp": "2026-05-17 22:51:39.503", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | Chunk 7/11 \u2192 'alice'"}
+{"timestamp": "2026-05-17 22:51:39.762", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | Chunk 8/11 \u2192 'alice'"}
+{"timestamp": "2026-05-17 22:51:39.838", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | Chunk 9/11 \u2192 'alice'"}
+{"timestamp": "2026-05-17 22:51:40.097", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | Chunk 10/11 \u2192 'alice'"}
+{"timestamp": "2026-05-17 22:51:40.262", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | Chunk 11/11 \u2192 'alice'"}
+{"timestamp": "2026-05-17 22:51:40.581", "level": "SUCCESS", "event": "COMPLETE", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | 'bob' \u2192 'alice' | '2.drawio.png'"}
+{"timestamp": "2026-05-17 22:53:31.615", "level": "INFO", "event": "LOGOUT", "actor": "SERVER", "message": "'alice' logged out."}
