@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Secure File Transfer</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#0d1117; --surface:#161b22; --border:#30363d;
+  --accent:#238636; --accent2:#1f6feb;
+  --text:#e6edf3; --dim:#8b949e;
+  --danger:#f85149; --success:#3fb950; --warn:#d29922;
+  --radius:8px;
+}
+html,body{height:100%;}
+body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100vh;overflow:hidden;font-size:13px;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;height:52px;display:flex;align-items:center;gap:16px;flex-shrink:0;}
+.topbar-logo{font-size:15px;font-weight:700;}
+.user-chip{background:#1c2d3a;border:1px solid #1f6feb55;border-radius:20px;padding:3px 12px 3px 8px;font-size:12px;color:var(--dim);display:none;align-items:center;gap:7px;}
+.user-chip .dot{width:6px;height:6px;border-radius:50%;background:var(--success);box-shadow:0 0 6px var(--success);animation:pulse 2s infinite;flex-shrink:0;}
+.user-chip b{color:var(--text);}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.topbar-actions{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.topbar-btn{color:var(--dim);font-size:12px;text-decoration:none;padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius);background:transparent;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.topbar-btn:hover{border-color:var(--accent2);color:var(--accent2);}
+.topbar-btn.danger:hover{border-color:var(--danger);color:var(--danger);}
+.app{display:flex;flex:1;min-height:0;}
+.sidebar{width:210px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+.sidebar-head{padding:12px 14px 8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--dim);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.sidebar-head button{background:none;border:none;cursor:pointer;color:var(--dim);font-size:14px;transition:color .15s;}
+.sidebar-head button:hover{color:var(--text);}
+.user-list{flex:1;overflow-y:auto;padding:6px;}
+.user-card{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius);cursor:pointer;border:1px solid transparent;transition:all .15s;margin-bottom:2px;}
+.user-card:hover{background:#21262d;border-color:var(--border);}
+.user-card.active{background:#1c2d3a;border-color:var(--accent2);}
+.user-av{width:32px;height:32px;border-radius:50%;background:#1c2d3a;color:var(--accent2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;text-transform:uppercase;flex-shrink:0;}
+.user-card.active .user-av{background:var(--accent2);color:#fff;}
+.user-nm{font-size:13px;color:var(--text);font-weight:500;}
+.sidebar-empty{padding:20px 12px;font-size:12px;color:var(--dim);line-height:1.8;text-align:center;}
+.sidebar-empty code{background:#21262d;padding:1px 5px;border-radius:4px;font-size:11px;color:var(--accent2);}
+.content{flex:1;display:flex;flex-direction:column;min-width:0;}
+.inbox-section{background:var(--surface);border-bottom:1px solid var(--border);display:flex;flex-direction:column;max-height:40%;min-height:80px;}
+.section-head{padding:10px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.section-title{font-size:13px;font-weight:600;}
+.count-badge{background:var(--accent2);color:#fff;font-size:10px;border-radius:10px;padding:1px 6px;min-width:18px;text-align:center;}
+.count-badge.zero{background:#30363d;color:var(--dim);}
+.refresh-btn{margin-left:auto;padding:4px 10px;border:1px solid var(--border);background:transparent;color:var(--dim);border-radius:5px;font-size:11px;cursor:pointer;transition:all .15s;}
+.refresh-btn:hover{border-color:var(--accent2);color:var(--accent2);}
+.inbox-body{flex:1;overflow-y:auto;padding:8px 14px;}
+.inbox-empty{padding:20px 0;color:var(--dim);font-size:12px;text-align:center;}
+.inbox-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:6px;background:var(--bg);transition:border-color .15s;}
+.inbox-row:hover{border-color:#444c56;}
+.ir-icon{font-size:20px;flex-shrink:0;}
+.ir-info{flex:1;min-width:0;}
+.ir-name{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ir-meta{font-size:11px;color:var(--dim);margin-top:2px;}
+.btn-accept{padding:5px 14px;background:var(--accent);color:#fff;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background .15s;}
+.btn-accept:hover:not(:disabled){background:#2ea043;}
+.btn-accept:disabled{background:#30363d;color:var(--dim);cursor:not-allowed;}
+.send-bar{background:var(--surface);border-top:2px solid var(--accent2);padding:14px 18px;flex-shrink:0;}
+.send-bar-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.to-badge{font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid var(--accent2);background:#1c2d3a;color:var(--accent2);white-space:nowrap;flex-shrink:0;}
+.to-badge.empty{border-color:var(--border);background:transparent;color:var(--dim);font-style:italic;}
+.file-label{padding:5px 12px;border:1px solid var(--border);border-radius:5px;font-size:12px;font-weight:500;cursor:pointer;background:transparent;color:var(--dim);white-space:nowrap;flex-shrink:0;transition:all .15s;}
+.file-label:hover{border-color:var(--accent2);color:var(--accent2);}
+.file-chip{display:none;align-items:center;gap:5px;padding:4px 10px;background:#12261e;border:1px solid #238636;border-radius:5px;font-size:11px;color:var(--success);flex-shrink:0;max-width:200px;}
+.file-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.send-status{flex:1;font-size:12px;}
+.send-status.ok{color:var(--success);}
+.send-status.err{color:var(--danger);}
+.btn-send{padding:7px 18px;background:var(--accent2);color:#fff;border:none;border-radius:5px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background .15s;}
+.btn-send:hover:not(:disabled){background:#388bfd;}
+.btn-send:disabled{background:#30363d;color:var(--dim);cursor:not-allowed;}
+.prog-wrap{height:2px;background:var(--border);border-radius:2px;margin-top:8px;display:none;overflow:hidden;}
+.prog-fill{height:100%;background:var(--accent2);width:0;transition:width .2s;}
+.recv-section{flex:1;overflow-y:auto;padding:10px 18px;background:var(--bg);}
+.recv-heading{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--dim);margin-bottom:8px;}
+.recv-item{display:flex;align-items:center;gap:8px;padding:7px 11px;background:#12261e;border:1px solid #238636;border-radius:6px;margin-bottom:5px;font-size:12px;}
+.ri-name{flex:1;color:var(--success);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ri-btn{padding:3px 9px;border:1px solid var(--border);background:transparent;color:var(--dim);border-radius:4px;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s;}
+.ri-btn:hover{border-color:var(--accent2);color:var(--accent2);}
+.recv-empty{font-size:12px;color:var(--dim);}
+.log-panel{width:290px;background:#0d1117;border-left:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+.log-head{padding:10px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px;flex-shrink:0;}
+.log-title{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--dim);}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--success);animation:pulse 1.5s infinite;}
+.log-clr{margin-left:auto;background:none;border:1px solid var(--border);color:var(--dim);font-size:10px;padding:2px 7px;border-radius:3px;cursor:pointer;transition:all .15s;}
+.log-clr:hover{border-color:#555;color:var(--text);}
+.log-body{flex:1;overflow-y:auto;padding:6px 8px;font-family:'Consolas','Courier New',monospace;font-size:10.5px;}
+.log-entry{padding:2px 4px;margin-bottom:1px;line-height:1.6;border-radius:2px;}
+.log-ts{color:#444c56;margin-right:4px;}
+.log-entry.INFO{color:#58a6ff;}
+.log-entry.SUCCESS{color:var(--success);}
+.log-entry.ERROR{color:var(--danger);}
+.log-empty{color:#30363d;font-size:10px;text-align:center;padding:20px 8px;}
+/* Auth modal */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(4px);}
+.overlay.hidden{display:none!important;}
+.auth-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:32px 28px;width:420px;max-width:calc(100vw - 32px);box-shadow:0 16px 48px rgba(0,0,0,.6);}
+.auth-card h2{font-size:20px;margin-bottom:6px;}
+.auth-card .subtitle{font-size:13px;color:var(--dim);margin-bottom:20px;line-height:1.6;}
+.auth-tabs{display:flex;gap:2px;margin-bottom:22px;background:var(--bg);border-radius:8px;padding:3px;}
+.auth-tab{flex:1;padding:8px;border:none;background:transparent;color:var(--dim);font-size:13px;font-weight:500;border-radius:6px;cursor:pointer;transition:all .15s;}
+.auth-tab.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.3);}
+.auth-tab:hover:not(.active){color:var(--text);}
+.auth-card label{font-size:11px;font-weight:600;color:var(--dim);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;}
+.auth-card input{width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:14px;margin-bottom:6px;outline:none;transition:border-color .15s;}
+.auth-card input:focus{border-color:var(--accent2);}
+.auth-card input.valid{border-color:var(--success);}
+.auth-card input.invalid{border-color:var(--danger);}
+.username-hint{font-size:11px;min-height:18px;margin-bottom:8px;transition:color .2s;}
+.username-hint.taken{color:var(--warn);}
+.username-hint.free{color:var(--success);}
+.username-hint.checking{color:var(--dim);}
+.auth-err{color:var(--danger);font-size:12px;min-height:18px;margin-bottom:8px;}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;}
+.chip{font-size:11px;padding:3px 10px;border-radius:12px;border:1px solid #1f6feb55;background:#1c2d3a;color:var(--accent2);}
+.chip.green{border-color:#23863655;background:#12261e;color:var(--success);}
+.auth-btn{width:100%;padding:11px;background:var(--accent2);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;transition:background .15s;margin-top:4px;}
+.auth-btn:hover:not(:disabled){background:#388bfd;}
+.auth-btn.green-btn{background:var(--accent);}
+.auth-btn.green-btn:hover:not(:disabled){background:#2ea043;}
+.auth-btn:disabled{background:#30363d;color:var(--dim);cursor:not-allowed;}
+.auth-note{margin-top:12px;font-size:11px;color:var(--dim);text-align:center;}
+.auth-note b{color:var(--success);}
+.login-notice{background:#2d1f00;border:1px solid #6e4c00;border-radius:6px;padding:10px 12px;margin-bottom:14px;font-size:12px;color:var(--warn);line-height:1.6;display:none;}
+/* Preview */
+.preview-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:300;}
+.preview-overlay.show{display:flex;}
+.preview-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.7);}
+.preview-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+.preview-fname{font-size:14px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.preview-dl{font-size:12px;color:var(--accent2);text-decoration:none;flex-shrink:0;}
+.preview-dl:hover{text-decoration:underline;}
+.preview-close{background:none;border:none;font-size:18px;cursor:pointer;color:var(--dim);flex-shrink:0;transition:color .15s;line-height:1;}
+.preview-close:hover{color:var(--text);}
+.preview-body{flex:1;overflow:auto;padding:12px;display:flex;align-items:center;justify-content:center;min-height:200px;}
+.preview-body img{max-width:100%;max-height:75vh;border-radius:4px;}
+.preview-body video{max-width:100%;max-height:75vh;}
+.preview-body audio{width:340px;}
+.preview-body pre{white-space:pre-wrap;word-break:break-all;font-size:12px;color:var(--text);font-family:monospace;max-height:70vh;overflow:auto;padding:12px;background:var(--bg);border-radius:6px;width:100%;}
+.preview-body iframe{width:80vw;height:75vh;border:none;background:#fff;}
+.preview-nosupport{color:var(--dim);font-size:14px;padding:30px;text-align:center;}
+/* Crypto error */
+.crypto-error{display:none;position:fixed;inset:0;background:var(--bg);z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px;text-align:center;}
+.crypto-error.show{display:flex;}
+.crypto-error h2{font-size:22px;color:var(--danger);}
+.crypto-error p{color:var(--dim);max-width:480px;line-height:1.7;font-size:14px;}
+.crypto-error code{background:#21262d;padding:2px 8px;border-radius:4px;color:var(--success);font-family:monospace;}
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#30363d;border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:#444c56;}
+</style>
+</head>
+<body>
+
+<div class="crypto-error" id="cryptoError">
+  <div style="font-size:48px">🔒</div>
+  <h2>Web Crypto API Unavailable</h2>
+  <p>Your browser only enables cryptography on <code>localhost</code> or HTTPS.<br><br>
+  Please open: <code>http://localhost:5000</code></p>
+</div>
+
+<div class="overlay" id="authOverlay">
+  <div class="auth-card">
+    <h2>🛡 Secure File Transfer</h2>
+    <p class="subtitle">RSA-2048 keys are generated <strong>in your browser</strong> — your private key never leaves this tab.</p>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabRegister" onclick="switchTab('register')">New User</button>
+      <button class="auth-tab"        id="tabLogin"    onclick="switchTab('login')">Returning User</button>
+    </div>
+    <!-- Register -->
+    <div id="panelRegister">
+      <div class="chips">
+        <span class="chip">RSA-2048 OAEP</span><span class="chip">AES-256-GCM</span>
+        <span class="chip">HMAC-SHA256</span><span class="chip">RSA-PSS</span>
+        <span class="chip green">🔒 Private key stays in browser</span>
+      </div>
+      <label>Choose a Username</label>
+      <input id="regName" type="text" placeholder="e.g. alice, bob…" maxlength="20" autocomplete="off"
+             oninput="checkUser('reg')" onkeydown="if(event.key==='Enter')doRegister()">
+      <div class="username-hint" id="regHint"></div>
+      <div class="auth-err" id="regErr"></div>
+      <button class="auth-btn" id="regBtn" onclick="doRegister()">Generate Keys &amp; Register</button>
+      <div class="auth-note"><b>✓ Zero-trust:</b> server only receives your public key</div>
+    </div>
+    <!-- Login -->
+    <div id="panelLogin" style="display:none">
+      <div class="login-notice" id="loginNotice">
+        ⚠ Your private key lives only in your browser tab. On refresh or re-open, new keys are generated and your public key on the server is updated. Any transfers sent before this login can no longer be decrypted (sender will need to resend).
+      </div>
+      <label>Your Username</label>
+      <input id="loginName" type="text" placeholder="Enter your existing username" maxlength="20" autocomplete="off"
+             oninput="checkUser('login')" onkeydown="if(event.key==='Enter')doLogin()">
+      <div class="username-hint" id="loginHint"></div>
+      <div class="auth-err" id="loginErr"></div>
+      <button class="auth-btn green-btn" id="loginBtn" onclick="doLogin()">Login with New Keys</button>
+      <div class="auth-note">Generates fresh keys and updates your public key on the server.</div>
+    </div>
+  </div>
+</div>
+
+<div class="preview-overlay" id="previewOverlay">
+  <div class="preview-box">
+    <div class="preview-head">
+      <span class="preview-fname" id="previewName"></span>
+      <a class="preview-dl" id="previewDl" href="#">⬇ Download</a>
+      <button class="preview-close" onclick="closePreview()">✕</button>
+    </div>
+    <div class="preview-body" id="previewBody"></div>
+  </div>
+</div>
+
+<div class="topbar">
+  <div class="topbar-logo">🛡 SecureTransfer</div>
+  <div class="user-chip" id="userChip"><div class="dot"></div><span>Logged in as <b id="dispUser">—</b></span></div>
+  <div class="topbar-actions">
+    <a class="topbar-btn" href="/monitor" target="_blank">Monitor →</a>
+    <button class="topbar-btn danger" id="logoutBtn" style="display:none" onclick="doLogout()">Logout</button>
+  </div>
+</div>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="sidebar-head">Users <button onclick="refreshUsers()" title="Refresh">↻</button></div>
+    <div class="user-list" id="userList">
+      <div class="sidebar-empty">No other users yet.<br><br>Open <code>localhost:5000</code> in another tab.</div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="inbox-section">
+      <div class="section-head">
+        <span class="section-title">📥 Inbox</span>
+        <span class="count-badge zero" id="inboxCount">0</span>
+        <button class="refresh-btn" onclick="checkInbox()">Refresh</button>
+      </div>
+      <div class="inbox-body" id="inboxBody"><div class="inbox-empty">No incoming transfers.</div></div>
+    </div>
+    <div class="send-bar">
+      <div class="send-bar-row">
+        <div class="to-badge empty" id="toBadge">← Select a user to send to</div>
+        <label class="file-label">📁 Choose File<input type="file" id="fileInput" style="display:none" onchange="filePicked()"></label>
+        <div class="file-chip" id="fileChip"><span>📄</span><span id="chipName"></span><span id="chipSize" style="color:var(--dim);flex-shrink:0;margin-left:4px"></span></div>
+        <div class="send-status" id="sendStatus"></div>
+        <button class="btn-send" id="btnSend" disabled onclick="doSend()">🔒 Send Encrypted</button>
+      </div>
+      <div class="prog-wrap" id="progWrap"><div class="prog-fill" id="progFill"></div></div>
+    </div>
+    <div class="recv-section">
+      <div class="recv-heading">Received Files</div>
+      <div id="recvList"><span class="recv-empty">Files you receive appear here.</span></div>
+    </div>
+  </div>
+  <div class="log-panel">
+    <div class="log-head"><div class="live-dot"></div><span class="log-title">Crypto Log</span><button class="log-clr" onclick="clearLog()">Clear</button></div>
+    <div class="log-body" id="logBody"><div class="log-empty">Events appear here.</div></div>
+  </div>
+</div>
+
+<script>
+const CHUNK = 64 * 1024;
+const SK = 'sftp_session';
+
+if (!window.crypto || !window.crypto.subtle) {
+  document.getElementById('cryptoError').classList.add('show');
+  document.getElementById('authOverlay').classList.add('hidden');
+  throw new Error('Web Crypto API unavailable');
+}
+
+let me='', token='', myKeys=null, recipient='', pickedFile=null, logs=[], recvFiles=[];
+let checkTimer=null;
+
+// ── Crypto helpers ────────────────────────────────────────────────────────
+function ab2b64(buf){const b=new Uint8Array(buf);let s='';for(let i=0;i<b.length;i++)s+=String.fromCharCode(b[i]);return btoa(s);}
+function b642ab(b64){const s=atob(b64);const b=new Uint8Array(s.length);for(let i=0;i<s.length;i++)b[i]=s.charCodeAt(i);return b.buffer;}
+function toPem(buf,label){return`-----BEGIN ${label}-----\n${ab2b64(buf).match(/.{1,64}/g).join('\n')}\n-----END ${label}-----\n`;}
+function pemToAb(pem){return b642ab(pem.replace(/-----[^-]+-----/g,'').replace(/\s/g,''));}
+function concat(a,b){const o=new Uint8Array(a.byteLength+b.byteLength);o.set(new Uint8Array(a));o.set(new Uint8Array(b),a.byteLength);return o.buffer;}
+async function genKeys(){
+  const[op,pp]=await Promise.all([
+    crypto.subtle.generateKey({name:'RSA-OAEP',modulusLength:2048,publicExponent:new Uint8Array([1,0,1]),hash:'SHA-256'},true,['encrypt','decrypt']),
+    crypto.subtle.generateKey({name:'RSA-PSS',modulusLength:2048,publicExponent:new Uint8Array([1,0,1]),hash:'SHA-256'},true,['sign','verify'])
+  ]);
+  return{oaep:{priv:op.privateKey,pub:op.publicKey},pss:{priv:pp.privateKey,pub:pp.publicKey}};
+}
+async function exportBundle(keys){
+  const[ob,pb]=await Promise.all([crypto.subtle.exportKey('spki',keys.oaep.pub),crypto.subtle.exportKey('spki',keys.pss.pub)]);
+  return JSON.stringify({oaep:toPem(ob,'PUBLIC KEY'),pss:toPem(pb,'PUBLIC KEY')});
+}
+async function importBundle(j){
+  const b=JSON.parse(j);
+  const[op,pp]=await Promise.all([
+    crypto.subtle.importKey('spki',pemToAb(b.oaep),{name:'RSA-OAEP',hash:'SHA-256'},false,['encrypt']),
+    crypto.subtle.importKey('spki',pemToAb(b.pss),{name:'RSA-PSS',hash:'SHA-256'},false,['verify'])
+  ]);
+  return{oaepPub:op,pssPub:pp};
+}
+async function importHmac(raw){return crypto.subtle.importKey('raw',raw,{name:'HMAC',hash:'SHA-256'},false,['sign','verify']);}
+
+// ── Session ───────────────────────────────────────────────────────────────
+function saveSession(u,t){try{localStorage.setItem(SK,JSON.stringify({u,t}));}catch(_){}}
+function loadSession(){try{return JSON.parse(localStorage.getItem(SK)||'null');}catch(_){return null;}}
+function clearSession(){try{localStorage.removeItem(SK);}catch(_){}}
+
+// ── Tabs ──────────────────────────────────────────────────────────────────
+function switchTab(tab){
+  document.getElementById('tabRegister').classList.toggle('active',tab==='register');
+  document.getElementById('tabLogin').classList.toggle('active',tab==='login');
+  document.getElementById('panelRegister').style.display=tab==='register'?'':'none';
+  document.getElementById('panelLogin').style.display=tab==='login'?'':'none';
+  if(tab==='login')document.getElementById('loginNotice').style.display='block';
+}
+
+// ── Username check ────────────────────────────────────────────────────────
+function checkUser(mode){
+  const inp=document.getElementById(mode==='reg'?'regName':'loginName');
+  const hint=document.getElementById(mode==='reg'?'regHint':'loginHint');
+  const val=inp.value.trim().toLowerCase();
+  inp.className='';hint.className='username-hint';hint.textContent='';
+  if(!val||val.length<2)return;
+  if(!/^[a-z0-9_]{2,20}$/.test(val)){hint.textContent='Letters, numbers, _ only (2-20 chars)';hint.className='username-hint taken';inp.className='invalid';return;}
+  hint.textContent='Checking…';hint.className='username-hint checking';
+  clearTimeout(checkTimer);
+  checkTimer=setTimeout(async()=>{
+    try{
+      const d=await(await fetch(`/api/check_username?username=${encodeURIComponent(val)}`)).json();
+      if(mode==='reg'){
+        if(d.exists){hint.textContent='✗ Username already taken';hint.className='username-hint taken';inp.className='invalid';}
+        else{hint.textContent='✓ Username available';hint.className='username-hint free';inp.className='valid';}
+      }else{
+        if(d.exists){hint.textContent='✓ Username found — click Login';hint.className='username-hint free';inp.className='valid';}
+        else{hint.textContent='✗ Not found — please register first';hint.className='username-hint taken';inp.className='invalid';}
+      }
+    }catch(_){}
+  },400);
+}
+
+// ── Register ──────────────────────────────────────────────────────────────
+async function doRegister(){
+  const val=document.getElementById('regName').value.trim().toLowerCase();
+  const err=document.getElementById('regErr');
+  const btn=document.getElementById('regBtn');
+  err.textContent='';
+  if(!val){err.textContent='Please enter a username.';return;}
+  if(!/^[a-z0-9_]{2,20}$/.test(val)){err.textContent='2-20 letters/numbers/underscore only.';return;}
+  btn.disabled=true;btn.textContent='Generating RSA-2048 keys…';
+  try{
+    myKeys=await genKeys();
+    const bundle=await exportBundle(myKeys);
+    btn.textContent='Registering…';
+    log('RSA-2048 key pairs generated in browser. Private keys never leave this tab.');
+    const d=await(await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:val,public_key_pem:bundle})})).json();
+    if(!d.success)throw new Error(d.error);
+    enterApp(val,d.session_token);
+  }catch(e){err.textContent=e.message;btn.disabled=false;btn.textContent='Generate Keys & Register';}
+}
+
+// ── Login ─────────────────────────────────────────────────────────────────
+async function doLogin(){
+  const val=document.getElementById('loginName').value.trim().toLowerCase();
+  const err=document.getElementById('loginErr');
+  const btn=document.getElementById('loginBtn');
+  err.textContent='';
+  if(!val){err.textContent='Please enter your username.';return;}
+  if(!/^[a-z0-9_]{2,20}$/.test(val)){err.textContent='Invalid username format.';return;}
+  btn.disabled=true;btn.textContent='Generating new RSA-2048 keys…';
+  try{
+    myKeys=await genKeys();
+    const bundle=await exportBundle(myKeys);
+    btn.textContent='Updating keys on server…';
+    log(`Generating new keys for '${val}' — previous public key will be replaced.`);
+    const d=await(await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:val,public_key_pem:bundle})})).json();
+    if(!d.success)throw new Error(d.error);
+    if(d.stale_cleared>0)log(`${d.stale_cleared} old pending transfer(s) cleared (encrypted with old key).`);
+    enterApp(val,d.session_token);
+  }catch(e){err.textContent=e.message;btn.disabled=false;btn.textContent='Login with New Keys';}
+}
+
+// ── Auto-restore on reload ────────────────────────────────────────────────
+async function tryRestore(){
+  const s=loadSession();
+  if(!s||!s.u)return false;
+  log(`Restoring session for '${s.u}' — generating new keys…`);
+  try{
+    myKeys=await genKeys();
+    const bundle=await exportBundle(myKeys);
+    const d=await(await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:s.u,public_key_pem:bundle})})).json();
+    if(!d.success){clearSession();return false;}
+    if(d.stale_cleared>0)log(`${d.stale_cleared} old transfer(s) cleared (encrypted with old key).`);
+    enterApp(s.u,d.session_token);
+    return true;
+  }catch(_){return false;}
+}
+
+// ── Enter app ─────────────────────────────────────────────────────────────
+function enterApp(username,sessionToken){
+  me=username;token=sessionToken;
+  saveSession(me,token);
+  document.getElementById('dispUser').textContent=me;
+  document.getElementById('userChip').style.display='flex';
+  document.getElementById('logoutBtn').style.display='';
+  document.getElementById('authOverlay').classList.add('hidden');
+  log(`Logged in as '${me}'.`,'SUCCESS');
+  refreshUsers();checkInbox();
+  setInterval(()=>{refreshUsers();checkInbox();},5000);
+}
+
+// ── Logout ────────────────────────────────────────────────────────────────
+async function doLogout(){
+  try{await fetch('/api/logout',{method:'POST',headers:hdrs(true)});}catch(_){}
+  clearSession();me='';token='';myKeys=null;recipient='';pickedFile=null;recvFiles=[];logs=[];
+  document.getElementById('userChip').style.display='none';
+  document.getElementById('logoutBtn').style.display='none';
+  document.getElementById('authOverlay').classList.remove('hidden');
+  document.getElementById('userList').innerHTML='<div class="sidebar-empty">No other users yet.<br><br>Open <code>localhost:5000</code> in another tab.</div>';
+  document.getElementById('inboxBody').innerHTML='<div class="inbox-empty">No incoming transfers.</div>';
+  document.getElementById('inboxCount').textContent='0';
+  document.getElementById('recvList').innerHTML='<span class="recv-empty">Files you receive appear here.</span>';
+  document.getElementById('logBody').innerHTML='<div class="log-empty">Events appear here.</div>';
+  document.getElementById('toBadge').textContent='← Select a user to send to';
+  document.getElementById('toBadge').className='to-badge empty';
+  document.getElementById('sendStatus').textContent='';
+  document.getElementById('fileChip').style.display='none';
+  document.getElementById('btnSend').disabled=true;
+  switchTab('register');
+  document.getElementById('regName').value='';
+  document.getElementById('regHint').textContent='';
+  document.getElementById('regBtn').disabled=false;
+  document.getElementById('regBtn').textContent='Generate Keys & Register';
+}
+
+function hdrs(json){const h={'X-Username':me,'X-Session-Token':token};if(json)h['Content-Type']='application/json';return h;}
+
+// ── Users ─────────────────────────────────────────────────────────────────
+async function refreshUsers(){
+  if(!me)return;
+  try{
+    const d=await(await fetch('/api/users',{headers:hdrs()})).json();
+    const users=d.users||[];
+    const ul=document.getElementById('userList');
+    if(!users.length){ul.innerHTML='<div class="sidebar-empty">No other users yet.<br><br>Open <code>localhost:5000</code> in another tab.</div>';return;}
+    ul.innerHTML=users.map(u=>`<div class="user-card ${u===recipient?'active':''}" onclick="pickUser('${esc(u)}')"><div class="user-av">${esc(u[0].toUpperCase())}</div><span class="user-nm">${esc(u)}</span></div>`).join('');
+  }catch(_){}
+}
+function pickUser(u){recipient=u;const tb=document.getElementById('toBadge');tb.textContent=`To: ${u}`;tb.className='to-badge';refreshUsers();updateSendBtn();}
+
+// ── File pick ─────────────────────────────────────────────────────────────
+function filePicked(){
+  const f=document.getElementById('fileInput').files[0];if(!f)return;
+  pickedFile=f;document.getElementById('fileChip').style.display='flex';
+  document.getElementById('chipName').textContent=f.name;document.getElementById('chipSize').textContent=fmt(f.size);
+  log(`File selected: ${esc(f.name)} (${fmt(f.size)})`);updateSendBtn();
+}
+function updateSendBtn(){document.getElementById('btnSend').disabled=!(recipient&&pickedFile);}
+
+// ── Send ──────────────────────────────────────────────────────────────────
+async function doSend(){
+  if(!recipient||!pickedFile)return;
+  const btn=document.getElementById('btnSend'),st=document.getElementById('sendStatus');
+  btn.disabled=true;btn.textContent='Encrypting…';st.textContent='';st.className='send-status';setProgress(5);
+  try{
+    log(`Fetching '${recipient}' public keys…`);
+    const kr=await(await fetch(`/api/get_public_key/${recipient}`,{headers:hdrs()})).json();
+    if(kr.error)throw new Error(kr.error);
+    const{oaepPub:rOaep}=await importBundle(kr.public_key_pem);
+    log(`Got '${recipient}' keys. Starting encryption.`);setProgress(10);
+    const aesKey=await crypto.subtle.generateKey({name:'AES-GCM',length:256},true,['encrypt','decrypt']);
+    const hmacRaw=crypto.getRandomValues(new Uint8Array(32));
+    const hmacKey=await importHmac(hmacRaw);
+    log('Ephemeral AES-256 + HMAC keys generated.');
+    const aesRaw=await crypto.subtle.exportKey('raw',aesKey);
+    const encAes=await crypto.subtle.encrypt({name:'RSA-OAEP'},rOaep,aesRaw);
+    const encHmac=await crypto.subtle.encrypt({name:'RSA-OAEP'},rOaep,hmacRaw);
+    log(`Keys wrapped with '${recipient}' RSA-OAEP public key.`);setProgress(15);
+    const enc=new TextEncoder();
+    const metaSig=await crypto.subtle.sign({name:'RSA-PSS',saltLength:32},myKeys.pss.priv,enc.encode(`${pickedFile.name}:${recipient}`));
+    const fileData=await pickedFile.arrayBuffer();
+    const totalChunks=Math.ceil(fileData.byteLength/CHUNK)||1;
+    const ir=await(await fetch('/api/initiate_transfer',{method:'POST',headers:hdrs(true),body:JSON.stringify({recipient,filename:pickedFile.name,file_size:fileData.byteLength,total_chunks:totalChunks,enc_aes_key:ab2b64(encAes),enc_hmac_key:ab2b64(encHmac),meta_signature:ab2b64(metaSig)})})).json();
+    if(!ir.success)throw new Error(ir.error);
+    const tid=ir.transfer_id;
+    log(`Transfer ${tid.slice(0,8)}… started. ${totalChunks} chunk(s).`);setProgress(20);
+    const cbufs=[];for(let i=0;i<fileData.byteLength;i+=CHUNK)cbufs.push(fileData.slice(i,i+CHUNK));
+    if(!cbufs.length)cbufs.push(new ArrayBuffer(0));
+    for(let idx=0;idx<cbufs.length;idx++){
+      const nonce=crypto.getRandomValues(new Uint8Array(12));
+      const aad=enc.encode(`chunk:${idx}:transfer:${tid}`);
+      const ec=await crypto.subtle.encrypt({name:'AES-GCM',iv:nonce,additionalData:aad},aesKey,cbufs[idx]);
+      const mac=await crypto.subtle.sign('HMAC',hmacKey,concat(nonce.buffer,ec));
+      const ib=new Uint8Array(4);new DataView(ib.buffer).setUint32(0,idx,false);
+      const sig=await crypto.subtle.sign({name:'RSA-PSS',saltLength:32},myKeys.pss.priv,concat(mac,ib.buffer));
+      log(`Chunk ${idx+1}/${cbufs.length}: AES-GCM ✓ HMAC ✓ PSS ✓`);
+      const fd=new FormData();fd.append('transfer_id',tid);fd.append('chunk_index',idx);fd.append('total_chunks',cbufs.length);fd.append('nonce',ab2b64(nonce.buffer));fd.append('hmac_tag',ab2b64(mac));fd.append('signature',ab2b64(sig));fd.append('chunk',new Blob([ec]),'chunk');
+      const up=await(await fetch('/api/upload_chunk',{method:'POST',headers:hdrs(),body:fd})).json();
+      if(!up.success)throw new Error(`Chunk ${idx} upload failed`);
+      setProgress(20+Math.round(78*(idx+1)/cbufs.length));
+    }
+    log(`All ${cbufs.length} chunk(s) uploaded. Ephemeral keys discarded.`,'SUCCESS');
+    setProgress(100);st.textContent=`✓ Sent to ${recipient} — ${cbufs.length} chunk(s) encrypted`;st.className='send-status ok';
+    btn.textContent='🔒 Send Encrypted';btn.disabled=false;pickedFile=null;
+    document.getElementById('fileInput').value='';document.getElementById('fileChip').style.display='none';updateSendBtn();
+    setTimeout(()=>setProgress(0),1500);
+  }catch(e){log('Send failed: '+e.message,'ERROR');st.textContent='✗ '+e.message;st.className='send-status err';btn.disabled=false;btn.textContent='🔒 Send Encrypted';setProgress(0);}
+}
+
+// ── Inbox / Receive ───────────────────────────────────────────────────────
+async function checkInbox(){
+  if(!me)return;
+  try{
+    const d=await(await fetch('/api/inbox',{headers:hdrs()})).json();
+    const list=d.transfers||[];
+    const badge=document.getElementById('inboxCount');
+    badge.textContent=list.length;badge.className='count-badge'+(list.length?'':' zero');
+    const body=document.getElementById('inboxBody');
+    if(!list.length){body.innerHTML='<div class="inbox-empty">No incoming transfers.</div>';return;}
+    body.innerHTML=list.map(t=>`<div class="inbox-row" id="ir_${t.transfer_id}"><div class="ir-icon">📦</div><div class="ir-info"><div class="ir-name">${esc(t.filename)}</div><div class="ir-meta">From <b>${esc(t.sender)}</b> · ${fmt(t.file_size)} · ${t.total_chunks} chunk(s)</div></div><button class="btn-accept" onclick="doReceive(${JSON.stringify(t).replace(/"/g,'&quot;')},this)">Accept &amp; Decrypt</button></div>`).join('');
+  }catch(_){}
+}
+async function doReceive(info,btn){
+  btn.disabled=true;btn.textContent='Decrypting…';const tid=info.transfer_id;
+  log(`Accepting transfer ${tid.slice(0,8)}… from '${info.sender}'`);
+  try{
+    const kr=await(await fetch(`/api/get_public_key/${info.sender}`,{headers:hdrs()})).json();
+    if(kr.error)throw new Error(kr.error);
+    const{pssPub:sPss}=await importBundle(kr.public_key_pem);
+    log(`'${info.sender}' public key imported.`);
+    log('Decrypting AES-256 key with our RSA-OAEP private key…');
+    const aesRaw=await crypto.subtle.decrypt({name:'RSA-OAEP'},myKeys.oaep.priv,b642ab(info.enc_aes_key));
+    const hmacRaw=await crypto.subtle.decrypt({name:'RSA-OAEP'},myKeys.oaep.priv,b642ab(info.enc_hmac_key));
+    const aesKey=await crypto.subtle.importKey('raw',aesRaw,{name:'AES-GCM'},false,['decrypt']);
+    const hmacKey=await importHmac(new Uint8Array(hmacRaw));
+    log('AES-256 key decrypted.','SUCCESS');
+    const enc=new TextEncoder();const plains=[];
+    for(let idx=0;idx<info.total_chunks;idx++){
+      const cr=await(await fetch(`/api/get_chunk?transfer_id=${tid}&chunk_index=${idx}`,{headers:hdrs()})).json();
+      if(cr.error)throw new Error(cr.error);
+      const ed=b642ab(cr.data_b64),nonce=b642ab(cr.nonce),mac=b642ab(cr.hmac),sig=b642ab(cr.sig);
+      log(`Chunk ${idx+1}/${info.total_chunks}: verifying RSA-PSS signature…`);
+      const ib=new Uint8Array(4);new DataView(ib.buffer).setUint32(0,idx,false);
+      if(!await crypto.subtle.verify({name:'RSA-PSS',saltLength:32},sPss,sig,concat(mac,ib.buffer)))throw new Error(`Chunk ${idx}: INVALID SIGNATURE`);
+      log(`Chunk ${idx+1}: signature ✓`,'SUCCESS');
+      if(!await crypto.subtle.verify('HMAC',hmacKey,mac,concat(nonce,ed)))throw new Error(`Chunk ${idx}: HMAC mismatch`);
+      log(`Chunk ${idx+1}: HMAC ✓`,'SUCCESS');
+      const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:new Uint8Array(nonce),additionalData:enc.encode(`chunk:${idx}:transfer:${tid}`)},aesKey,ed);
+      log(`Chunk ${idx+1}: decrypted ✓`,'SUCCESS');plains.push(plain);
+    }
+    const total=plains.reduce((s,c)=>s+c.byteLength,0);
+    const assembled=new Uint8Array(total);let off=0;
+    for(const c of plains){assembled.set(new Uint8Array(c),off);off+=c.byteLength;}
+    const objUrl=URL.createObjectURL(new Blob([assembled]));
+    log(`'${info.filename}' reassembled. Ephemeral keys discarded.`,'SUCCESS');
+    await fetch('/api/complete_transfer',{method:'POST',headers:hdrs(true),body:JSON.stringify({transfer_id:tid})});
+    recvFiles.push({name:info.filename,objUrl});renderRecvFiles();
+    document.getElementById(`ir_${tid}`)?.remove();checkInbox();
+  }catch(e){log('Receive failed: '+e.message,'ERROR');btn.disabled=false;btn.textContent='Accept & Decrypt';}
+}
+
+// ── Received files ────────────────────────────────────────────────────────
+function renderRecvFiles(){
+  const el=document.getElementById('recvList');
+  if(!recvFiles.length){el.innerHTML='<span class="recv-empty">Files you receive appear here.</span>';return;}
+  const canOpen=n=>/\.(png|jpg|jpeg|gif|webp|bmp|svg|pdf|mp4|webm|ogg|mp3|wav|txt|md|csv|json|js|py|html|css|xml)$/i.test(n);
+  el.innerHTML=recvFiles.map((f,i)=>`<div class="recv-item"><span>✅</span><span class="ri-name" title="${esc(f.name)}">${esc(f.name)}</span>${canOpen(f.name)?`<button class="ri-btn" onclick="openFile(${i})">Open</button>`:''}<button class="ri-btn" onclick="dlFile(${i})">Download</button></div>`).join('');
+}
+function dlFile(i){const f=recvFiles[i];const a=document.createElement('a');a.href=f.objUrl;a.download=f.name;a.click();}
+async function openFile(i){
+  const f=recvFiles[i],ext=f.name.split('.').pop().toLowerCase();
+  document.getElementById('previewName').textContent=f.name;
+  document.getElementById('previewDl').href=f.objUrl;document.getElementById('previewDl').download=f.name;
+  document.getElementById('previewOverlay').classList.add('show');
+  let html='';
+  if(['png','jpg','jpeg','gif','webp','bmp','svg'].includes(ext))html=`<img src="${f.objUrl}" alt="${esc(f.name)}">`;
+  else if(['mp4','webm','ogg'].includes(ext))html=`<video controls src="${f.objUrl}"></video>`;
+  else if(['mp3','wav'].includes(ext))html=`<audio controls src="${f.objUrl}"></audio>`;
+  else if(ext==='pdf')html=`<iframe src="${f.objUrl}"></iframe>`;
+  else if(['txt','md','csv','json','js','py','html','css','xml'].includes(ext)){const text=await(await fetch(f.objUrl)).text();html=`<pre>${esc(text.slice(0,30000))}</pre>`;}
+  else html=`<div class="preview-nosupport">No preview for .${ext} — use Download.</div>`;
+  document.getElementById('previewBody').innerHTML=html;
+}
+function closePreview(){document.getElementById('previewOverlay').classList.remove('show');document.getElementById('previewBody').innerHTML='';}
+document.getElementById('previewOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closePreview();});
+
+// ── Log & helpers ─────────────────────────────────────────────────────────
+function log(msg,level='INFO'){
+  const ts=new Date().toTimeString().slice(0,8),body=document.getElementById('logBody');
+  if(!logs.length)body.innerHTML='';logs.push({ts,level,msg});
+  const d=document.createElement('div');d.className='log-entry '+level;
+  d.innerHTML=`<span class="log-ts">${ts}</span>${esc(msg)}`;body.appendChild(d);body.scrollTop=body.scrollHeight;
+}
+function clearLog(){logs=[];document.getElementById('logBody').innerHTML='<div class="log-empty">Events appear here.</div>';}
+function setProgress(pct){document.getElementById('progWrap').style.display=pct>0?'block':'none';document.getElementById('progFill').style.width=pct+'%';}
+function fmt(b){if(!b)return'0 B';if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(2)+' MB';}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+
+// ── Boot ──────────────────────────────────────────────────────────────────
+window.addEventListener('load',async()=>{
+  const restored=await tryRestore();
+  if(!restored){
+    const s=loadSession();
+    if(s&&s.u){switchTab('login');document.getElementById('loginName').value=s.u;checkUser('login');}
+    else document.getElementById('regName').focus();
+  }
+});
+</script>
+</body>
+</html>

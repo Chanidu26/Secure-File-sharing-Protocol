@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Server Monitor — SecureTransfer</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0d1117; --surface: #161b22; --border: #30363d;
+  --text: #e6edf3; --dim: #8b949e;
+  --blue: #58a6ff; --green: #3fb950; --amber: #d29922;
+  --red: #f85149; --purple: #bc8cff;
+}
+html, body { height: 100%; }
+body {
+  font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg); color: var(--text);
+  display: flex; flex-direction: column; height: 100vh;
+  font-size: 13px;
+}
+.topbar {
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 0 20px; height: 52px;
+  display: flex; align-items: center; gap: 16px; flex-shrink: 0;
+}
+.topbar h1 { font-size: 15px; font-weight: 700; }
+.topbar a {
+  margin-left: auto; color: var(--dim); font-size: 12px;
+  text-decoration: none; padding: 5px 10px;
+  border: 1px solid var(--border); border-radius: 6px; transition: all .15s;
+}
+.topbar a:hover { border-color: var(--blue); color: var(--blue); }
+
+.stats {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.stat { padding: 14px 20px; border-right: 1px solid var(--border); }
+.stat:last-child { border-right: none; }
+.stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--dim); margin-bottom: 6px; }
+.stat-val { font-size: 26px; font-weight: 700; font-family: monospace; }
+.blue { color: var(--blue); }
+.green { color: var(--green); }
+.amber { color: var(--amber); }
+.purple { color: var(--purple); }
+
+.layout { flex: 1; display: grid; grid-template-columns: 1fr 230px; min-height: 0; }
+
+.log-area { display: flex; flex-direction: column; overflow: hidden; border-right: 1px solid var(--border); }
+.log-toolbar {
+  padding: 10px 16px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+}
+.log-toolbar-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--dim); }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: blink 1.5s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+.clr-btn {
+  margin-left: auto; background: transparent;
+  border: 1px solid var(--border); color: var(--dim);
+  font-size: 11px; padding: 3px 10px; border-radius: 4px;
+  cursor: pointer; transition: all .15s;
+}
+.clr-btn:hover { border-color: #555; color: var(--text); }
+
+.log-table { flex: 1; overflow-y: auto; }
+table { width: 100%; border-collapse: collapse; font-family: 'Consolas', 'Courier New', monospace; font-size: 11.5px; }
+thead th {
+  padding: 7px 12px; text-align: left;
+  font-size: 10px; text-transform: uppercase; letter-spacing: 1px;
+  color: #444c56; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; background: var(--bg);
+}
+tbody tr { border-bottom: 1px solid #161b22; }
+tbody tr:hover { background: #161b22; }
+tbody td { padding: 6px 12px; vertical-align: top; }
+.td-time { color: #444c56; white-space: nowrap; }
+.td-level { white-space: nowrap; font-weight: 600; }
+.td-level.INFO    { color: var(--blue); }
+.td-level.SUCCESS { color: var(--green); }
+.td-level.ERROR   { color: var(--red); }
+.td-actor { white-space: nowrap; color: var(--purple); }
+.td-msg { color: #8b949e; }
+.empty-row td { padding: 40px 20px; text-align: center; color: #30363d; font-size: 12px; }
+
+.sidebar { padding: 16px; overflow-y: auto; }
+.sb-section { margin-bottom: 22px; }
+.sb-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #444c56; margin-bottom: 10px; }
+.user-chip {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; background: #1c2d3a;
+  border-radius: 6px; margin-bottom: 6px;
+  border: 1px solid #1f6feb33;
+}
+.uc-av {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--blue); display: flex; align-items: center;
+  justify-content: center; font-size: 12px; color: #0d1117;
+  font-weight: 700; text-transform: uppercase; flex-shrink: 0;
+}
+.uc-name { font-size: 12px; color: var(--text); flex: 1; }
+.uc-badge { font-size: 9px; color: var(--green); text-transform: uppercase; letter-spacing: .5px; }
+.no-users { font-size: 12px; color: #444c56; }
+.proto-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; gap: 8px; }
+.proto-k { color: var(--dim); }
+.proto-v { color: var(--green); font-family: monospace; font-size: 11px; text-align: right; }
+
+/* scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <h1>🛡 Server Monitor — SecureTransfer</h1>
+  <a href="/" target="_blank">Open Client →</a>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-label">Registered Users</div><div class="stat-val blue"   id="sUsers">0</div></div>
+  <div class="stat"><div class="stat-label">Ready Transfers</div><div class="stat-val amber"  id="sPending">0</div></div>
+  <div class="stat"><div class="stat-label">Completed</div><div class="stat-val green"  id="sComplete">0</div></div>
+  <div class="stat"><div class="stat-label">Log Entries</div><div class="stat-val purple" id="sLogs">0</div></div>
+</div>
+
+<div class="layout">
+  <div class="log-area">
+    <div class="log-toolbar">
+      <div class="live-dot"></div>
+      <span class="log-toolbar-label">Cryptographic Event Log</span>
+      <button class="clr-btn" onclick="clearLogs()">Clear</button>
+    </div>
+    <div class="log-table">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:165px">Timestamp</th>
+            <th style="width:75px">Level</th>
+            <th style="width:90px">Actor</th>
+            <th>Message</th>
+          </tr>
+        </thead>
+        <tbody id="logBody">
+          <tr class="empty-row"><td colspan="4">Waiting for events…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sb-section">
+      <div class="sb-title">Registered Users</div>
+      <div id="userChips"><span class="no-users">None yet.</span></div>
+    </div>
+    <div class="sb-section">
+      <div class="sb-title">Cryptographic Protocol</div>
+      <div class="proto-row"><span class="proto-k">Key exchange</span><span class="proto-v">RSA-2048 OAEP</span></div>
+      <div class="proto-row"><span class="proto-k">Encryption</span><span class="proto-v">AES-256-GCM</span></div>
+      <div class="proto-row"><span class="proto-k">Integrity</span><span class="proto-v">HMAC-SHA256</span></div>
+      <div class="proto-row"><span class="proto-k">Signatures</span><span class="proto-v">RSA-PSS</span></div>
+      <div class="proto-row"><span class="proto-k">Forward secrecy</span><span class="proto-v">Ephemeral keys</span></div>
+    </div>
+    <div class="sb-section">
+      <div class="sb-title">CIA Triad</div>
+      <div class="proto-row"><span class="proto-k">Confidentiality</span><span class="proto-v">AES-256-GCM</span></div>
+      <div class="proto-row"><span class="proto-k">Integrity</span><span class="proto-v">HMAC-SHA256</span></div>
+      <div class="proto-row"><span class="proto-k">Authenticity</span><span class="proto-v">RSA Signatures</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+let knownUsers = new Set();
+
+async function refresh() {
+  try {
+    const [lr, sr] = await Promise.all([
+      fetch('/api/logs'), fetch('/api/status')]);
+    const ld = await lr.json();
+    const sd = await sr.json();
+    const logs = ld.logs || [];
+
+    // Stats
+    document.getElementById('sUsers').textContent    = sd.registered_users    ?? 0;
+    document.getElementById('sPending').textContent  = sd.pending_transfers   ?? 0;
+    document.getElementById('sComplete').textContent = sd.completed_transfers ?? 0;
+    document.getElementById('sLogs').textContent     = logs.length;
+
+    // Log table
+    const tb = document.getElementById('logBody');
+    if (!logs.length) {
+      tb.innerHTML = '<tr class="empty-row"><td colspan="4">Waiting for events…</td></tr>';
+    } else {
+      tb.innerHTML = logs.map(l => `
+        <tr>
+          <td class="td-time">${esc(l.timestamp)}</td>
+          <td class="td-level ${esc(l.level)}">${esc(l.level)}</td>
+          <td class="td-actor">${esc(l.actor)}</td>
+          <td class="td-msg">${esc(l.message)}</td>
+        </tr>`).join('');
+    }
+
+    // User chips — derive from log actors (actors that are not SERVER)
+    const actors = [...new Set(
+      logs.filter(l => l.actor !== 'SERVER').map(l => l.actor.toLowerCase())
+    )];
+    const chips = document.getElementById('userChips');
+    if (actors.length) {
+      chips.innerHTML = actors.map(u => `
+        <div class="user-chip">
+          <div class="uc-av">${esc(u[0].toUpperCase())}</div>
+          <span class="uc-name">${esc(u)}</span>
+          <span class="uc-badge">active</span>
+        </div>`).join('');
+    } else {
+      chips.innerHTML = '<span class="no-users">None yet.</span>';
+    }
+  } catch (e) {
+    console.warn('Monitor refresh error:', e);
+  }
+}
+
+async function clearLogs() {
+  await fetch('/api/clear_logs', { method: 'POST' });
+  document.getElementById('logBody').innerHTML =
+    '<tr class="empty-row"><td colspan="4">Cleared.</td></tr>';
+  document.getElementById('sLogs').textContent = 0;
+}
+
+setInterval(refresh, 2000);
+refresh();
+</script>
+</body>
+</html>

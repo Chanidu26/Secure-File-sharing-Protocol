@@ -1,0 +1,36 @@
+{"timestamp": "2026-05-17 22:21:26.564", "level": "INFO", "event": "SERVER_START", "actor": "SERVER", "message": "Secure File Transfer Server started \u2014 open http://localhost:5000"}
+{"timestamp": "2026-05-17 22:21:43.295", "level": "INFO", "event": "REGISTER", "actor": "SERVER", "message": "'alice' registered. Public key stored. Private key stays in client."}
+{"timestamp": "2026-05-17 22:22:22.179", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'alice' logged in. New keys registered. 0 stale transfer(s) cleared (encrypted with old key)."}
+{"timestamp": "2026-05-17 22:22:46.877", "level": "INFO", "event": "REGISTER", "actor": "SERVER", "message": "'bob' registered. Public key stored. Private key stays in client."}
+{"timestamp": "2026-05-17 22:22:59.251", "level": "INFO", "event": "KEY_FETCH", "actor": "SERVER", "message": "'bob' fetched public key of 'alice' for client-side encryption"}
+{"timestamp": "2026-05-17 22:22:59.605", "level": "INFO", "event": "TRANSFER_INIT", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | 'bob' \u2192 'alice' | 'cia.drawio.png'"}
+{"timestamp": "2026-05-17 22:22:59.895", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 1/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:22:59.979", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 2/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:23:00.259", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 3/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:23:00.459", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 4/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:23:00.621", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 5/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:23:00.809", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 6/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:23:00.976", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 7/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:23:01.173", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 8/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:23:01.329", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 9/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:23:01.558", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 10/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:23:01.679", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 11/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:23:01.915", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 12/13 | 65552 bytes"}
+{"timestamp": "2026-05-17 22:23:02.262", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 13/13 | 45701 bytes"}
+{"timestamp": "2026-05-17 22:23:02.277", "level": "INFO", "event": "TRANSFER_READY", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | All 13 chunk(s) ready for 'alice'"}
+{"timestamp": "2026-05-17 22:23:07.155", "level": "INFO", "event": "KEY_FETCH", "actor": "SERVER", "message": "'alice' fetched public key of 'bob' for client-side encryption"}
+{"timestamp": "2026-05-17 22:23:07.442", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 1/13 \u2192 'alice'"}
+{"timestamp": "2026-05-17 22:23:07.731", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 2/13 \u2192 'alice'"}
+{"timestamp": "2026-05-17 22:23:07.811", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 3/13 \u2192 'alice'"}
+{"timestamp": "2026-05-17 22:23:08.058", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 4/13 \u2192 'alice'"}
+{"timestamp": "2026-05-17 22:23:08.145", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 5/13 \u2192 'alice'"}
+{"timestamp": "2026-05-17 22:23:08.455", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 6/13 \u2192 'alice'"}
+{"timestamp": "2026-05-17 22:23:08.487", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 7/13 \u2192 'alice'"}
+{"timestamp": "2026-05-17 22:23:08.827", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 8/13 \u2192 'alice'"}
+{"timestamp": "2026-05-17 22:23:09.106", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 9/13 \u2192 'alice'"}
+{"timestamp": "2026-05-17 22:23:09.452", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 10/13 \u2192 'alice'"}
+{"timestamp": "2026-05-17 22:23:09.478", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 11/13 \u2192 'alice'"}
+{"timestamp": "2026-05-17 22:23:09.811", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 12/13 \u2192 'alice'"}
+{"timestamp": "2026-05-17 22:23:10.083", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | Chunk 13/13 \u2192 'alice'"}
+{"timestamp": "2026-05-17 22:23:10.173", "level": "SUCCESS", "event": "COMPLETE", "actor": "SERVER", "message": "Transfer 5b450133\u2026 | 'bob' \u2192 'alice' | 'cia.drawio.png'"}
+{"timestamp": "2026-05-17 22:23:25.233", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'bob' logged in. New keys registered. 0 stale transfer(s) cleared (encrypted with old key)."}
