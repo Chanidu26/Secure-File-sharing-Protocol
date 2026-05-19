@@ -114,3 +114,26 @@
 {"timestamp": "2026-05-17 22:51:40.262", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | Chunk 11/11 \u2192 'alice'"}
 {"timestamp": "2026-05-17 22:51:40.581", "level": "SUCCESS", "event": "COMPLETE", "actor": "SERVER", "message": "Transfer 343d91da\u2026 | 'bob' \u2192 'alice' | '2.drawio.png'"}
 {"timestamp": "2026-05-17 22:53:31.615", "level": "INFO", "event": "LOGOUT", "actor": "SERVER", "message": "'alice' logged out."}
+{"timestamp": "2026-05-19 14:48:37.127", "level": "INFO", "event": "SERVER_START", "actor": "SERVER", "message": "Secure File Transfer Server started \u2014 open http://localhost:5000"}
+{"timestamp": "2026-05-19 14:49:19.608", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'alice' logged in. New keys registered. 0 stale transfer(s) cleared (encrypted with old key)."}
+{"timestamp": "2026-05-19 14:49:31.394", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'alice' logged in. New keys registered. 0 stale transfer(s) cleared (encrypted with old key)."}
+{"timestamp": "2026-05-19 14:50:03.909", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'bob' logged in. New keys registered. 0 stale transfer(s) cleared (encrypted with old key)."}
+{"timestamp": "2026-05-19 14:50:21.076", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'alice' logged in. New keys registered. 0 stale transfer(s) cleared (encrypted with old key)."}
+{"timestamp": "2026-05-19 14:50:34.745", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'alice' logged in. New keys registered. 0 stale transfer(s) cleared (encrypted with old key)."}
+{"timestamp": "2026-05-19 14:50:54.050", "level": "INFO", "event": "LOGIN", "actor": "SERVER", "message": "'alice' logged in. New keys registered. 0 stale transfer(s) cleared (encrypted with old key)."}
+{"timestamp": "2026-05-19 14:51:37.945", "level": "INFO", "event": "KEY_FETCH", "actor": "SERVER", "message": "'alice' fetched public key of 'bob' for client-side encryption"}
+{"timestamp": "2026-05-19 14:51:38.196", "level": "INFO", "event": "TRANSFER_INIT", "actor": "SERVER", "message": "Transfer e481362b\u2026 | 'alice' \u2192 'bob' | 'Logbook_G14_EG_2021_4486.pdf'"}
+{"timestamp": "2026-05-19 14:51:38.330", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer e481362b\u2026 | Chunk 1/5 | 65552 bytes"}
+{"timestamp": "2026-05-19 14:51:38.567", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer e481362b\u2026 | Chunk 2/5 | 65552 bytes"}
+{"timestamp": "2026-05-19 14:51:38.690", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer e481362b\u2026 | Chunk 3/5 | 65552 bytes"}
+{"timestamp": "2026-05-19 14:51:38.945", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer e481362b\u2026 | Chunk 4/5 | 65552 bytes"}
+{"timestamp": "2026-05-19 14:51:39.037", "level": "INFO", "event": "CHUNK_RECV", "actor": "SERVER", "message": "Transfer e481362b\u2026 | Chunk 5/5 | 21300 bytes"}
+{"timestamp": "2026-05-19 14:51:39.047", "level": "INFO", "event": "TRANSFER_READY", "actor": "SERVER", "message": "Transfer e481362b\u2026 | All 5 chunk(s) ready for 'bob'"}
+{"timestamp": "2026-05-19 14:51:48.634", "level": "INFO", "event": "KEY_FETCH", "actor": "SERVER", "message": "'bob' fetched public key of 'alice' for client-side encryption"}
+{"timestamp": "2026-05-19 14:51:48.985", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer e481362b\u2026 | Chunk 1/5 \u2192 'bob'"}
+{"timestamp": "2026-05-19 14:51:49.269", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer e481362b\u2026 | Chunk 2/5 \u2192 'bob'"}
+{"timestamp": "2026-05-19 14:51:49.342", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer e481362b\u2026 | Chunk 3/5 \u2192 'bob'"}
+{"timestamp": "2026-05-19 14:51:49.608", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer e481362b\u2026 | Chunk 4/5 \u2192 'bob'"}
+{"timestamp": "2026-05-19 14:51:49.685", "level": "INFO", "event": "CHUNK_SENT", "actor": "SERVER", "message": "Transfer e481362b\u2026 | Chunk 5/5 \u2192 'bob'"}
+{"timestamp": "2026-05-19 14:51:49.962", "level": "SUCCESS", "event": "COMPLETE", "actor": "SERVER", "message": "Transfer e481362b\u2026 | 'alice' \u2192 'bob' | 'Logbook_G14_EG_2021_4486.pdf'"}
+{"timestamp": "2026-05-19 14:53:49.274", "level": "INFO", "event": "REGISTER", "actor": "SERVER", "message": "'chanidu' registered. Public key stored. Private key stays in client."}
