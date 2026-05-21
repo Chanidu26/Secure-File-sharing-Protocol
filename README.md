@@ -14,6 +14,9 @@ A browser-native, end-to-end encrypted file transfer system. Private keys **neve
 ### Receiver View — Bob decrypting chunks in-browser
 ![Receiver UI](images/receiving.png)
 
+### SonarCloud Code Quality Scanner
+![Sonarcloud UI](images/sonarcloud.png)
+
 ---
 
 ## ✨ Key Security Properties
