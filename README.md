@@ -1,18 +1,28 @@
-# 🔐 Secure File Sharing Protocol
+# 🔐 Secure File Sharing Protocol using AWS Cognito
 
-A browser-native, end-to-end encrypted file transfer system. Private keys **never leave the client browser** — the server is a blind relay that stores only public keys and encrypted ciphertext.
-
-> Built with Python (Flask) + Web Crypto API. Zero external crypto dependencies on the client.
+A browser-native, end-to-end encrypted file transfer system Built with Python (Flask) + Web Crypto API. Zero external crypto dependencies on the client and AWS Cognito Authentication
 
 ---
 
 ## 📸 Screenshots
 
-### Sender View — Alice sending an encrypted file to Bob
+### Sender View — sending an encrypted file to Bob
 ![Sender UI](images/sending.png)
 
-### Receiver View — Bob decrypting chunks in-browser
+### Receiver View — decrypting chunks in-browser
 ![Receiver UI](images/receiving.png)
+
+### SignUp with AWS Cognito
+![Signup](images/signup.png)
+
+### Signin with AWS Cognito
+![Signin](images/login.png)
+
+### AWS Cognito User Pool Setup
+![Cognito-User-Pool](images/cognito-user-pool.png)
+
+### AWS Cognito Registered Users
+![Users](images/users.png)
 
 ---
 
@@ -22,7 +32,8 @@ A browser-native, end-to-end encrypted file transfer system. Private keys **neve
 |---|---|
 | **Confidentiality** | AES-256-GCM per-chunk encryption |
 | **Integrity** | HMAC-SHA256 + AES-GCM authentication tag |
-| **Authentication** | RSA-PSS-2048 per-chunk digital signatures |
+| **Authentication** | AWS Cognito User Pool Signin and Signup |
+| **Digital Signature** | RSA-PSS-2048 per-chunk digital signatures |
 | **Key Secrecy** | Private keys generated in-browser, never transmitted |
 | **Replay Protection** | Per-chunk nonce + transfer ID bound via AAD |
 | **Forward Secrecy** | Ephemeral AES/HMAC keys discarded after transfer |
@@ -58,8 +69,7 @@ Secure-File-sharing-Protocol/
 ├── logs/
 │   └── server.log         # JSONL structured event log
 │
-├── images/
-│   └── secure_file_transfer.png   # Protocol sequence diagram
+├── images/Secreenshots
 │
 └── received/              # Placeholder directory (files stay in-browser)
 ```
