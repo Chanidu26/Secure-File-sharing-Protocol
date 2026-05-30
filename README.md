@@ -24,6 +24,9 @@ A browser-native, end-to-end encrypted file transfer system Built with Python (F
 ### Receiver View — decrypting chunks in-browser
 ![Receiver UI](images/receiving.png)
 
+### Code Quality Analysis
+![SonarCloud](images/sonarcloud.png)
+
 ---
 
 ## ✨ Key Security Properties
