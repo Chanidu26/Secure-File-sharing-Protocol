@@ -1,6 +1,13 @@
 """
-Persistent SQLite storage — users, transfers, chunks, logs.
-DB path is anchored to this file's directory.
+Database — Session-based key model.
+
+Design:
+- Private keys NEVER stored. Generated fresh each login, live in browser memory only.
+- Public keys stored only while user is actively logged in (online=1).
+- On logout / session expiry → public key cleared, user goes offline.
+- Only online users can receive files (they have a live public key).
+- Transfers created while recipient is online; encrypted chunks persist for pickup.
+- Sessions table: one row per active login, tied to Cognito sub + session_id.
 """
 import sqlite3
 from pathlib import Path
@@ -20,13 +27,22 @@ def init_db():
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     with _conn() as conn:
         conn.executescript("""
+            -- Permanent user identity (display name persists across logins)
             CREATE TABLE IF NOT EXISTS users (
-                username        TEXT PRIMARY KEY,
-                public_key_pem  TEXT NOT NULL,
-                session_token   TEXT NOT NULL,
-                registered_at   TEXT NOT NULL,
-                last_seen       TEXT
+                username        TEXT PRIMARY KEY,   -- Cognito sub UUID
+                display_name    TEXT NOT NULL,
+                registered_at   TEXT NOT NULL
             );
+
+            -- Active session: public key present only while logged in
+            CREATE TABLE IF NOT EXISTS sessions (
+                username        TEXT PRIMARY KEY,   -- one active session per user
+                session_id      TEXT NOT NULL,      -- random token tied to Flask session
+                public_key_pem  TEXT NOT NULL,      -- RSA public key bundle (OAEP + PSS)
+                logged_in_at    TEXT NOT NULL,
+                last_ping       TEXT NOT NULL        -- updated on every API call
+            );
+
             CREATE TABLE IF NOT EXISTS transfers (
                 transfer_id     TEXT PRIMARY KEY,
                 sender          TEXT NOT NULL,
@@ -41,6 +57,7 @@ def init_db():
                 created_at      TEXT NOT NULL,
                 completed_at    TEXT
             );
+
             CREATE TABLE IF NOT EXISTS chunks (
                 id           INTEGER PRIMARY KEY AUTOINCREMENT,
                 transfer_id  TEXT    NOT NULL,
@@ -51,6 +68,7 @@ def init_db():
                 sig          TEXT    NOT NULL,
                 UNIQUE(transfer_id, chunk_index)
             );
+
             CREATE TABLE IF NOT EXISTS logs (
                 id        INTEGER PRIMARY KEY AUTOINCREMENT,
                 timestamp TEXT NOT NULL,
@@ -63,14 +81,7 @@ def init_db():
     print(f"[DB] Ready at {DB_PATH}")
 
 
-# ── Users ──────────────────────────────────────────────────────────────────────
-
-def add_user(username, public_key_pem, session_token):
-    now = datetime.now().isoformat()
-    with _conn() as c:
-        c.execute(
-            "INSERT INTO users (username,public_key_pem,session_token,registered_at,last_seen) VALUES(?,?,?,?,?)",
-            (username, public_key_pem, session_token, now, now))
+# ── Users (permanent identity) ─────────────────────────────────────────────────
 
 def get_user(username):
     c   = _conn()
@@ -78,41 +89,77 @@ def get_user(username):
     c.close()
     return dict(row) if row else None
 
-def get_all_users():
-    c    = _conn()
-    rows = c.execute("SELECT username FROM users").fetchall()
-    c.close()
-    return [r["username"] for r in rows]
-
-def update_user_last_seen(username):
+def upsert_user(username, display_name):
+    """Create user identity if new; never overwrite display_name once set."""
+    now = datetime.now().isoformat()
     with _conn() as c:
-        c.execute("UPDATE users SET last_seen=? WHERE username=?",
+        existing = c.execute("SELECT username FROM users WHERE username=?", (username,)).fetchone()
+        if not existing:
+            c.execute("INSERT INTO users(username,display_name,registered_at) VALUES(?,?,?)",
+                      (username, display_name, now))
+            return True   # is_new
+    return False
+
+
+# ── Sessions (ephemeral, online state) ────────────────────────────────────────
+
+def create_session(username, session_id, public_key_pem):
+    """Register a fresh login with new public keys."""
+    now = datetime.now().isoformat()
+    with _conn() as c:
+        c.execute("""
+            INSERT INTO sessions(username, session_id, public_key_pem, logged_in_at, last_ping)
+            VALUES(?,?,?,?,?)
+            ON CONFLICT(username) DO UPDATE SET
+                session_id=excluded.session_id,
+                public_key_pem=excluded.public_key_pem,
+                logged_in_at=excluded.logged_in_at,
+                last_ping=excluded.last_ping
+        """, (username, session_id, public_key_pem, now, now))
+
+def delete_session(username):
+    """Mark user offline — public key removed from DB."""
+    with _conn() as c:
+        c.execute("DELETE FROM sessions WHERE username=?", (username,))
+
+def ping_session(username):
+    """Update last_ping on every API call — keeps user 'online'."""
+    with _conn() as c:
+        c.execute("UPDATE sessions SET last_ping=? WHERE username=?",
                   (datetime.now().isoformat(), username))
 
-def update_user_keys(username, public_key_pem, session_token):
-    """Replace public key + session token on re-login."""
-    with _conn() as c:
-        c.execute(
-            "UPDATE users SET public_key_pem=?, session_token=?, last_seen=? WHERE username=?",
-            (public_key_pem, session_token, datetime.now().isoformat(), username))
+def get_session(username):
+    c   = _conn()
+    row = c.execute("SELECT * FROM sessions WHERE username=?", (username,)).fetchone()
+    c.close()
+    return dict(row) if row else None
 
-def invalidate_session(username):
-    """Set session token to empty string — makes any stored token invalid."""
-    with _conn() as c:
-        c.execute("UPDATE users SET session_token='' WHERE username=?", (username,))
+def get_online_users():
+    """Return all users with an active session (logged in right now)."""
+    c    = _conn()
+    rows = c.execute("""
+        SELECT u.username, u.display_name, s.logged_in_at
+        FROM sessions s
+        JOIN users u ON u.username = s.username
+        ORDER BY s.logged_in_at DESC
+    """).fetchall()
+    c.close()
+    return [{"username": r["username"], "display_name": r["display_name"],
+             "logged_in_at": r["logged_in_at"]} for r in rows]
 
-def mark_stale_transfers(recipient):
-    """
-    When a user re-logs in with new keys, pending transfers addressed to them
-    were encrypted with their old public key and can no longer be decrypted.
-    Mark them as 'stale' so they don't clutter the inbox.
-    Returns count of transfers marked.
-    """
-    with _conn() as c:
-        cur = c.execute(
-            "UPDATE transfers SET status='stale' WHERE recipient=? AND status='ready'",
-            (recipient,))
-        return cur.rowcount
+def get_public_key(username):
+    """Returns public_key_pem only if user is currently online."""
+    c   = _conn()
+    row = c.execute("SELECT public_key_pem FROM sessions WHERE username=?", (username,)).fetchone()
+    c.close()
+    return row["public_key_pem"] if row else None
+
+def validate_session(username, session_id):
+    """Check that the session_id in JWT matches what we stored."""
+    c   = _conn()
+    row = c.execute("SELECT session_id FROM sessions WHERE username=?", (username,)).fetchone()
+    c.close()
+    return row and row["session_id"] == session_id
 
 
 # ── Transfers ──────────────────────────────────────────────────────────────────
@@ -200,7 +247,9 @@ def clear_logs():
 def get_status():
     c         = _conn()
     users     = c.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+    online    = c.execute("SELECT COUNT(*) FROM sessions").fetchone()[0]
     pending   = c.execute("SELECT COUNT(*) FROM transfers WHERE status='ready'").fetchone()[0]
     completed = c.execute("SELECT COUNT(*) FROM transfers WHERE status='completed'").fetchone()[0]
     c.close()
-    return {"registered_users": users, "pending_transfers": pending, "completed_transfers": completed}
+    return {"registered_users": users, "online_users": online,
+            "pending_transfers": pending, "completed_transfers": completed}

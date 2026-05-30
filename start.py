@@ -1,33 +1,24 @@
-#!/usr/bin/env python3
 """
-start.py — launches server.py
-Open http://localhost:5000 in your browser after running this.
+Start the Secure File Transfer server with .env loading.
+Usage:  python start.py
 """
-import subprocess, sys, os, time
+import os, pathlib
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Load .env if present
+env_path = pathlib.Path(__file__).parent / ".env"
+if env_path.exists():
+    for line in env_path.read_text().splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            k, v = line.split("=", 1)
+            os.environ.setdefault(k.strip(), v.strip())
 
-def main():
-    print("\n╔══════════════════════════════════════════════╗")
-    print("║        Secure File Transfer — Ready          ║")
-    print("╠══════════════════════════════════════════════╣")
-    print("║  Open:    http://localhost:5000              ║")
-    print("║  Monitor: http://localhost:5000/monitor      ║")
-    print("╚══════════════════════════════════════════════╝")
-    print("\nPress Ctrl+C to stop.\n")
-
-    env = {**os.environ, "PYTHONPATH": BASE_DIR}
-    proc = subprocess.Popen([sys.executable, "server.py"], cwd=BASE_DIR, env=env)
-
-    try:
-        proc.wait()
-    except KeyboardInterrupt:
-        print("\nShutting down…")
-        proc.terminate()
-        try:
-            proc.wait(timeout=3)
-        except Exception:
-            proc.kill()
+from server import app, log_event
 
 if __name__ == "__main__":
-    main()
+    base = os.environ.get("APP_BASE_URL", "http://localhost:5000")
+    log_event("SERVER_START", "SERVER",
+        f"Secure File Transfer (Cognito Edition) — open {base}")
+    print(f"\n  🛡  SecureTransfer (Cognito Edition)")
+    print(f"  Open: {base}\n")
+    app.run(host="127.0.0.1", port=5000, debug=False, use_reloader=False)
