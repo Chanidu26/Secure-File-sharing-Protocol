@@ -6,12 +6,6 @@ A browser-native, end-to-end encrypted file transfer system Built with Python (F
 
 ## 📸 Screenshots
 
-### Sender View — sending an encrypted file to Bob
-![Sender UI](images/sending.png)
-
-### Receiver View — decrypting chunks in-browser
-![Receiver UI](images/receiving.png)
-
 ### SignUp with AWS Cognito
 ![Signup](images/signup.png)
 
@@ -23,6 +17,12 @@ A browser-native, end-to-end encrypted file transfer system Built with Python (F
 
 ### AWS Cognito Registered Users
 ![Users](images/users.png)
+
+### Sender View — sending an encrypted file to Bob
+![Sender UI](images/sending.png)
+
+### Receiver View — decrypting chunks in-browser
+![Receiver UI](images/receiving.png)
 
 ---
 
